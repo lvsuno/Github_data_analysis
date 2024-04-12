@@ -27,7 +27,7 @@ default:
   DRUID_SCHEME: http
   DRUID_USER: user
   # Google
-  GOOGLE_SERVICE_ACC_KEY_FILEPATH: "/home/src/.keys/github-data-analysis-418315-96023170ca9a.json"
+  GOOGLE_SERVICE_ACC_KEY_FILEPATH: "/home/src/.keys/github-data-analysis.json"
   GOOGLE_LOCATION: US # Optional
   # MongoDB
   # Specify either the connection string or the (host, password, user, port) to connect to MongoDB.
@@ -100,10 +100,10 @@ default:
 
 dev:
     # Google
-  GOOGLE_SERVICE_ACC_KEY_FILEPATH: "/home/src/.keys/github-data-analysis-418315-96023170ca9a.json"
+  GOOGLE_SERVICE_ACC_KEY_FILEPATH: "/home/src/.keys/github-data-analysis.json"
   GOOGLE_LOCATION: US # Optional
 
 prod:
     # Google
-  GOOGLE_SERVICE_ACC_KEY_FILEPATH: "/home/src/.keys/github-data-analysis-418315-96023170ca9a.json"
+  GOOGLE_SERVICE_ACC_KEY_FILEPATH: "/home/src/.keys/github-data-analysis.json"
   GOOGLE_LOCATION: US # Optional

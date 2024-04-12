@@ -17,12 +17,12 @@ variable "container_memory" {
 variable "project_id" {
   type        = string
   description = "Github Data Analysis"
-  default     = "github-data-analysis-418315"
+  default     = "github-data-analysis-419818"
 }
 
 variable "credentials" {
   description = "My Credentials"
-  default     = "../../.keys/github-data-analysis-418315-96023170ca9a.json"
+  default     = "../../.keys/github-data-analysis.json"
 }
 
 
