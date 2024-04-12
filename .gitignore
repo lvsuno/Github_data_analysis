@@ -137,7 +137,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+
 .venv
 .DS_Store
 env/
@@ -204,7 +204,7 @@ node_modules
 *scratch*
 /mage_data*
 *secrets*.json
-.env
+
 
 .ssh_tunnel/
 

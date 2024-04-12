@@ -25,11 +25,11 @@ terraform -chdir=./infrastructure/gcs+bigquery  apply
 ```
 terraform -chdir=./infrastructure/deploy_mage init
 
-terraform -chdir=./infrastructure/deploy_mage   apply
+terraform -chdir=./infrastructure/deploy_mage apply
 ```
 
 1. Create a free google cloud account and get your trial of 300$
-2. Create a service account  and Grant the following roles to a new service (BigQuery Admin, Cloud SQL Admin, Owner, Storage Admin, Storage Object Admin)
+2.  Grant the following roles to a new service (BigQuery Admin, Cloud SQL Admin, Owner, Storage Admin, Storage Object Admin, Cloud Run Admin, Artifact Registry Reader, Artifact Registry Writer, Serverless VPC Access Admin, Service Account Token Creator, Secret Manager Secret Accessor)
 3. Generate an access keys (Json type) and download it
 3. Activate BigQuery API, 
 
@@ -71,3 +71,9 @@ For this project, we'll use a free version (upto EUR 300 credits).
       * https://console.cloud.google.com/apis/library/vpcaccess.googleapis.com
       * https://console.cloud.google.com/apis/library/secretmanager.googleapis.com
       * https://console.cloud.google.com/apis/library/sqladmin.googleapis.com
+      * https://console.cloud.google.com/apis/library/file.googleapis.com
+      * https://console.cloud.google.com/apis/library/serviceusage.googleapis.com
+
+
+
+https://docs.mage.ai/production/deploying-to-cloud/gcp/setup#secrets
