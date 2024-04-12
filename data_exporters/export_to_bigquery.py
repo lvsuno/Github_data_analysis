@@ -2,6 +2,7 @@ if 'data_exporter' not in globals():
     from mage_ai.data_preparation.decorators import data_exporter
 from google.cloud import bigquery
 from dotenv import dotenv_values
+import os
 
 config = dotenv_values(".env") 
 @data_exporter
@@ -18,6 +19,12 @@ def export_data(data, *args, **kwargs):
         displayed when inspecting the block run.
     """
     # Specify your data exporting logic here
+
+    if os.path.isfile(config["Google_credentials"]):
+        cred = config["Google_credentials"]
+    else:
+        cred = os.getenv('Google_credentials')
+
     
 
     # Demonstrates creating an external table with hive partitioning.
@@ -33,14 +40,16 @@ def export_data(data, *args, **kwargs):
     source_uri_prefix = (
     prefix +'{year:STRING}/{month:STRING}/{day:STRING}'
                      )
+
+    # Construct a BigQuery client object.
+    client = bigquery.Client(config['PROJECT_ID'], client_options={"credentials_file":cred})
     
     if kwargs.get('type_execution') == 'initial_data':
 
         uri = f'gs://{config["BUCKET_NAME"]}/{config["BUCKET_FOLDER_NAME"]}/*'
 
-            # Construct a BigQuery client object.
-        client = bigquery.Client(config['PROJECT_ID'], client_options={"credentials_file":config["Google_credentials"]})
-                # Configure the external data source.
+
+        # Configure the external data source.
         external_config = bigquery.ExternalConfig("PARQUET")
         external_config.source_uris = [uri]
         external_config.autodetect = False

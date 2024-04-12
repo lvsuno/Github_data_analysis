@@ -10,7 +10,7 @@ terraform {
 }
 
 provider "google" {
-  credentials = file(var.credentials)
+  #credentials = file(var.credentials)
   project = var.project_id
   region  = var.region
   zone    = var.zone
@@ -69,6 +69,7 @@ resource "google_cloud_run_service" "run_service" {
 
   template {
     spec {
+      service_account_name = var.service_account_email
       containers {
         image = var.docker_image
         ports {

@@ -29,7 +29,7 @@ terraform -chdir=./infrastructure/deploy_mage apply
 ```
 
 1. Create a free google cloud account and get your trial of 300$
-2.  Grant the following roles to a new service (BigQuery Admin, Cloud SQL Admin, Owner, Storage Admin, Storage Object Admin, Cloud Run Admin, Artifact Registry Reader, Artifact Registry Writer, Serverless VPC Access Admin, Service Account Token Creator, Secret Manager Secret Accessor)
+2.  Create a service account and Grant the following roles to a new service (BigQuery Admin, Cloud SQL Admin, Owner, Storage Admin, Storage Object Admin, Cloud Run Admin, Artifact Registry Reader, Artifact Registry Writer, Serverless VPC Access Admin, Service Account Token Creator, Secret Manager Secret Accessor)
 3. Generate an access keys (Json type) and download it
 3. Activate BigQuery API, 
 

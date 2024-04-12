@@ -63,3 +63,10 @@ variable "ssl" {
   type        = bool
   default     = false
 }
+
+
+variable "service_account_email" {
+  description = "service_account_email that are used to run terraform and cloud Run"
+  type = string
+  default = "github-service@github-data-analysis-419818.iam.gserviceaccount.com"
+}

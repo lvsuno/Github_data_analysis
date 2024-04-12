@@ -97,17 +97,21 @@ def load_data_from_api(*args, **kwargs):
     now = kwargs.get('execution_date')
    # df = pd.DataFrame()  
     chunk_size = int(config["CHUNK_SIZE"])
+    if os.path.isfile(config["Google_credentials"]):
+        cred = config["Google_credentials"]
+    else:
+        cred = os.getenv('Google_credentials')
 
 
     # Check if the data concerning the previous day is not stocked in GCS
     previous_day = now - timedelta(days=1)
     if exist_not(f'raw_github/year={previous_day.strftime("%Y")}/month={int(previous_day.strftime("%m"))}/day={int(previous_day.strftime("%d"))}',
-       config["BUCKET_NAME"], config["PROJECT_ID"], config["Google_credentials"]):
+       config["BUCKET_NAME"], config["PROJECT_ID"], cred):
         # If yes, check if the data concerning the day before the previous day is not stocked in GCS
         day_before_previous = now - timedelta(days=2)
             
         if exist_not(f'raw_github/year={day_before_previous.strftime("%Y")}/month={int(day_before_previous.strftime("%m"))}/day={int(day_before_previous.strftime("%d"))}',
-           config["BUCKET_NAME"], config["PROJECT_ID"], config["Google_credentials"]):
+           config["BUCKET_NAME"], config["PROJECT_ID"], cred):
             # If yes, then load the previous month and the day til the previous day
             set_global_variable('github_etl', 'type_execution', 'initial_data')
 
