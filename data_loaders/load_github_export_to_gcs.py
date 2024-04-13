@@ -21,6 +21,28 @@ import pandas as pd
 
 config = dotenv_values(".env") # This line brings all environment variables from .env into os.environ
 
+if not config:
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.getenv("Google_credentials")
+    bucket_name = os.getenv("BUCKET_NAME")
+    project_id = os.getenv("GCP_PROJECT_ID")
+
+    folder_name = os.getenv("BUCKET_FOLDER_NAME")
+    chunk_size = int(os.getenv("CHUNK_SIZE"))
+    cred = os.getenv('Google_credentials')
+
+else:
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config["Google_credentials"]
+    bucket_name = config["BUCKET_NAME"]
+    project_id = config["PROJECT_ID"]
+
+    folder_name = config["BUCKET_FOLDER_NAME"]
+    chunk_size = int(config["CHUNK_SIZE"])
+    cred = config["Google_credentials"]
+
+
+    
+        
+
 
 def exist_not(name, bucket_name, project_id, credential):
     # name = 'folder1/another_folder/'  
@@ -49,11 +71,6 @@ def export_to_gcs(data: pd.DataFrame):
     """
     # Specify your data exporting logic here
 
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config["Google_credentials"]
-    bucket_name = config["BUCKET_NAME"]
-    project_id = config["PROJECT_ID"]
-
-    folder_name = config["BUCKET_FOLDER_NAME"]
 
     root_path = f'{bucket_name}/{folder_name}'
     
@@ -96,22 +113,17 @@ def load_data_from_api(*args, **kwargs):
     """
     now = kwargs.get('execution_date')
    # df = pd.DataFrame()  
-    chunk_size = int(config["CHUNK_SIZE"])
-    if os.path.isfile(config["Google_credentials"]):
-        cred = config["Google_credentials"]
-    else:
-        cred = os.getenv('Google_credentials')
 
 
     # Check if the data concerning the previous day is not stocked in GCS
     previous_day = now - timedelta(days=1)
     if exist_not(f'raw_github/year={previous_day.strftime("%Y")}/month={int(previous_day.strftime("%m"))}/day={int(previous_day.strftime("%d"))}',
-       config["BUCKET_NAME"], config["PROJECT_ID"], cred):
+       bucket_name, project_id, cred):
         # If yes, check if the data concerning the day before the previous day is not stocked in GCS
         day_before_previous = now - timedelta(days=2)
             
         if exist_not(f'raw_github/year={day_before_previous.strftime("%Y")}/month={int(day_before_previous.strftime("%m"))}/day={int(day_before_previous.strftime("%d"))}',
-           config["BUCKET_NAME"], config["PROJECT_ID"], cred):
+           bucket_name, project_id, cred):
             # If yes, then load the previous month and the day til the previous day
             set_global_variable('github_etl', 'type_execution', 'initial_data')
 

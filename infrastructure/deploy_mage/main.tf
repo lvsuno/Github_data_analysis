@@ -102,6 +102,26 @@ resource "google_cloud_run_service" "run_service" {
           value = var.app_name
         }
         env {
+          name  = "BUCKET_NAME"
+          value = var.BUCKET_NAME
+        }
+        env {
+          name  = "BUCKET_FOLDER_NAME"
+          value = var.BUCKET_FOLDER_NAME
+        }
+        env {
+          name  = "CHUNK_SIZE"
+          value = var.CHUNK_SIZE
+        }
+        env {
+          name  = "Dataset_Id"
+          value = var.Dataset_Id
+        }
+        env {
+          name  = "Table_name"
+          value = var.Table_name
+        }
+        env {
           name  = "ULIMIT_NO_FILE"
           value = 16384
         }

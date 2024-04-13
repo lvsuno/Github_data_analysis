@@ -5,6 +5,30 @@ from dotenv import dotenv_values
 import os
 
 config = dotenv_values(".env") 
+
+
+if not config:
+    bucket_name = os.getenv("BUCKET_NAME")
+    project_id = os.getenv("GCP_PROJECT_ID")
+
+    folder_name = os.getenv("BUCKET_FOLDER_NAME")
+    chunk_size = int(os.getenv("CHUNK_SIZE"))
+    cred = os.getenv('Google_credentials')
+    Dataset_Id = os.getenv('Dataset_Id')
+    Table_name = os.getenv('Table_name')
+
+else:
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config["Google_credentials"]
+    bucket_name = config["BUCKET_NAME"]
+    project_id = config["PROJECT_ID"]
+
+    folder_name = config["BUCKET_FOLDER_NAME"]
+    chunk_size = int(config["CHUNK_SIZE"])
+    cred = config["Google_credentials"]
+    Dataset_Id = config['Dataset_Id']
+    Table_name = config['Table_name']
+
+
 @data_exporter
 def export_data(data, *args, **kwargs):
     """
@@ -19,34 +43,28 @@ def export_data(data, *args, **kwargs):
         displayed when inspecting the block run.
     """
     # Specify your data exporting logic here
-
-    if os.path.isfile(config["Google_credentials"]):
-        cred = config["Google_credentials"]
-    else:
-        cred = os.getenv('Google_credentials')
-
     
 
     # Demonstrates creating an external table with hive partitioning.
 
     # TODO(developer): Set table_id to the ID of the table to create.
-    table_id = f"{config['PROJECT_ID']}.{config['Dataset_Id']}.{config['Table_name']}"
+    table_id = f"{project_id}.{Dataset_Id}.{Table_name}"
 
     
     # Example file:
     # gs://cloud-samples-data/bigquery/hive-partitioning-samples/autolayout/dt=2020-11-15/file1.parquet
-    prefix = f'gs://{config["BUCKET_NAME"]}/{config["BUCKET_FOLDER_NAME"]}/'
+    prefix = f'gs://{bucket_name}/{folder_name}/'
     
     source_uri_prefix = (
     prefix +'{year:STRING}/{month:STRING}/{day:STRING}'
                      )
 
     # Construct a BigQuery client object.
-    client = bigquery.Client(config['PROJECT_ID'], client_options={"credentials_file":cred})
+    client = bigquery.Client(project_id, client_options={"credentials_file":cred})
     
     if kwargs.get('type_execution') == 'initial_data':
 
-        uri = f'gs://{config["BUCKET_NAME"]}/{config["BUCKET_FOLDER_NAME"]}/*'
+        uri = f'gs://{bucket_name}/{folder_name}/*'
 
 
         # Configure the external data source.

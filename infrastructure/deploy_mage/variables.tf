@@ -70,3 +70,35 @@ variable "service_account_email" {
   type = string
   default = "github-service@github-data-analysis-419818.iam.gserviceaccount.com"
 }
+
+
+variable "BUCKET_NAME" { 
+  description = " "
+  type = string
+  default = "github-bucket-3615"
+}
+
+variable "BUCKET_FOLDER_NAME" { 
+  description = " "
+  type = string
+  default = "raw_github"
+}
+
+variable "CHUNK_SIZE" { 
+  description = " "
+  type = number
+  default = 60000
+}
+
+variable "Dataset_Id" { 
+  description = " "
+  type = string
+  default = "raw_github_archive"
+}
+
+variable "Table_name" { 
+  description = " "
+  type = string
+  default = "april_github_archive"
+}
+
