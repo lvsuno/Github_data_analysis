@@ -11,7 +11,7 @@ variable "container_cpu" {
 
 variable "container_memory" {
   description = "Container memory"
-  default     = "2G"
+  default     = "4G"
 }
 
 variable "project_id" {
@@ -87,7 +87,7 @@ variable "BUCKET_FOLDER_NAME" {
 variable "CHUNK_SIZE" { 
   description = " "
   type = number
-  default = 60000
+  default = 10000
 }
 
 variable "Dataset_Id" { 

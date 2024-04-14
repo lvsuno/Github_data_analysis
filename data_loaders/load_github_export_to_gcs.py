@@ -16,31 +16,6 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import os
 import pandas as pd
-
-
-
-config = dotenv_values(".env") # This line brings all environment variables from .env into os.environ
-
-if not config:
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.getenv("Google_credentials")
-    bucket_name = os.getenv("BUCKET_NAME")
-    project_id = os.getenv("GCP_PROJECT_ID")
-
-    folder_name = os.getenv("BUCKET_FOLDER_NAME")
-    chunk_size = int(os.getenv("CHUNK_SIZE"))
-    cred = os.getenv('Google_credentials')
-
-else:
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config["Google_credentials"]
-    bucket_name = config["BUCKET_NAME"]
-    project_id = config["PROJECT_ID"]
-
-    folder_name = config["BUCKET_FOLDER_NAME"]
-    chunk_size = int(config["CHUNK_SIZE"])
-    cred = config["Google_credentials"]
-
-
-    
         
 
 
@@ -65,7 +40,7 @@ def clean_data(data: pd.DataFrame) -> pd.DataFrame:
     data["day"] = data["created_at"].dt.day
     return data
 
-def export_to_gcs(data: pd.DataFrame):
+def export_to_gcs(data: pd.DataFrame, bucket_name, folder_name):
     """
     Exports data to some source to Google Cloud Storage
     """
@@ -78,7 +53,9 @@ def export_to_gcs(data: pd.DataFrame):
     table = pa.Table.from_pandas(data)
 
     gcs = pa.fs.GcsFileSystem()
-
+    print('yep')
+    print(bucket_name)
+    print(folder_name)
     pq.write_to_dataset(
         table,
         root_path=root_path,
@@ -87,17 +64,18 @@ def export_to_gcs(data: pd.DataFrame):
         coerce_timestamps='ms',
         allow_truncated_timestamps=True
     )
+    
 
 
-def fetch_chunk_data(url, chunk_size):
+def fetch_chunk_data(url, chunk_size, bucket_name, folder_name):
 
-    #try:
+    # try:
     with pd.read_json(url, lines=True, storage_options={'User-Agent': 'pandas'}, 
         compression="gzip", chunksize=chunk_size) as chunk_read:
         for chunk in chunk_read:
             data = pd.DataFrame(chunk)
             data_cleaned = clean_data(data)
-            export_to_gcs(data_cleaned)
+            export_to_gcs(data_cleaned, bucket_name, folder_name)
     # except:
     #     print(f"An exception occur for url {url}")
    
@@ -112,18 +90,66 @@ def load_data_from_api(*args, **kwargs):
     Load incrementally by adding just the data of the previous day (Since our pipeline will run on daily basis).
     """
     now = kwargs.get('execution_date')
+    if not kwargs.get('BUCKET_NAME'):
+        config = dotenv_values(".env") # This line brings all environment variables from .env into os.environ
+        print(config)
+        if not config:
+            #os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.getenv("Google_credentials")
+            bucket_name = os.getenv("BUCKET_NAME")
+            project_id = os.getenv("GCP_PROJECT_ID")
+
+            folder_name = os.getenv("BUCKET_FOLDER_NAME")
+            chunk_size = int(os.getenv("CHUNK_SIZE"))
+            cred = os.getenv('Google_credentials')
+
+            set_global_variable('github_etl', 'BUCKET_NAME', bucket_name)
+            set_global_variable('github_etl', 'PROJECT_ID', project_id)
+            set_global_variable('github_etl', 'BUCKET_FOLDER_NAME', folder_name)
+            set_global_variable('github_etl', 'CHUNK_SIZE', chunk_size)
+            set_global_variable('github_etl', 'Google_credentials', cred)
+            set_global_variable('github_etl', 'Dataset_Id', config["Dataset_Id"])
+            set_global_variable('github_etl', 'Table_name', config["Table_name"])
+
+        else:
+            # os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config["Google_credentials"]
+            
+            bucket_name = config["BUCKET_NAME"]
+            project_id = config["PROJECT_ID"]
+            folder_name = config["BUCKET_FOLDER_NAME"]
+            chunk_size = int(config["CHUNK_SIZE"])
+            cred = config["Google_credentials"]
+
+            set_global_variable('github_etl', 'BUCKET_NAME', bucket_name)
+            set_global_variable('github_etl', 'PROJECT_ID', project_id)
+            set_global_variable('github_etl', 'BUCKET_FOLDER_NAME', folder_name)
+            set_global_variable('github_etl', 'CHUNK_SIZE', chunk_size)
+            set_global_variable('github_etl', 'Google_credentials', cred)
+            set_global_variable('github_etl', 'Dataset_Id', config["Dataset_Id"])
+            set_global_variable('github_etl', 'Table_name', config["Table_name"])
+
+    else:
+        bucket_name = kwargs.get("BUCKET_NAME")
+        project_id = kwargs.get("GCP_PROJECT_ID")
+
+        folder_name = kwargs.get("BUCKET_FOLDER_NAME")
+        chunk_size = int(kwargs.get("CHUNK_SIZE"))
+        cred = kwargs.get('Google_credentials')
+
+
+
    # df = pd.DataFrame()  
 
 
     # Check if the data concerning the previous day is not stocked in GCS
     previous_day = now - timedelta(days=1)
     if exist_not(f'raw_github/year={previous_day.strftime("%Y")}/month={int(previous_day.strftime("%m"))}/day={int(previous_day.strftime("%d"))}',
-       bucket_name, project_id, cred):
+        bucket_name, project_id, cred):
         # If yes, check if the data concerning the day before the previous day is not stocked in GCS
         day_before_previous = now - timedelta(days=2)
+        print(day_before_previous)
             
         if exist_not(f'raw_github/year={day_before_previous.strftime("%Y")}/month={int(day_before_previous.strftime("%m"))}/day={int(day_before_previous.strftime("%d"))}',
-           bucket_name, project_id, cred):
+            bucket_name, project_id, cred):
             # If yes, then load the previous month and the day til the previous day
             set_global_variable('github_etl', 'type_execution', 'initial_data')
 
@@ -143,7 +169,7 @@ def load_data_from_api(*args, **kwargs):
                 for hour in range(24):
                     url = f'https://data.gharchive.org/{now.strftime("%Y")}-{now.strftime("%m"):02}-{day:02}-{hour}.json.gz'
                     print(f"year:{now.strftime('%Y')}, month:{now.strftime('%m'):02}, day:{day:02}, hour:{hour}, url:{url} \n")
-                    fetch_chunk_data(url, chunk_size)
+                    fetch_chunk_data(url, chunk_size, bucket_name, folder_name)
 
             # If no, then load the data of the previous day
         else:
@@ -152,10 +178,9 @@ def load_data_from_api(*args, **kwargs):
             for hour in range(24):
                 url = f'https://data.gharchive.org/{previous_day.strftime("%Y")}-{previous_day.strftime("%m"):02}-{previous_day.strftime("%d"):02}-{hour}.json.gz'
                 print(f"year:{previous_day.strftime('%Y')}, month:{previous_day.strftime('%m'):02}, day:{previous_day.strftime('%d'):02}, hour:{hour:02}, url:{url} \n")
-                fetch_chunk_data(url, chunk_size)
+                fetch_chunk_data(url, chunk_size, bucket_name, folder_name)
 
     return previous_day
-
 
 
 # @test
