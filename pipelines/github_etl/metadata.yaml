@@ -3,14 +3,14 @@ blocks:
   color: null
   configuration: {}
   downstream_blocks:
-  - github_archive
+  - dbt_models
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: python
   name: export_to_bigquery
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: data_exporter
   upstream_blocks:
@@ -36,27 +36,27 @@ blocks:
   color: null
   configuration:
     dbt:
-      command: debug
-    dbt_profile_target: '{{ env_var(''ENV'') }}'
-    dbt_project_name: dbt/github_archive
+      command: run
+    dbt_profile_target: ''
+    dbt_project_name: dbt/github_archive_1
     disable_query_preprocessing: false
     export_write_policy: append
     file_source:
-      path: dbts/github_archive.yaml
+      path: dbts/bitter_cedar.yaml
     use_raw_sql: false
   downstream_blocks: []
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: yaml
-  name: github_archive
+  name: dbt_models
   retry_config: null
-  status: failed
+  status: executed
   timeout: null
   type: dbt
   upstream_blocks:
   - export_to_bigquery
-  uuid: github_archive
+  uuid: dbt_models
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}
@@ -78,7 +78,7 @@ settings:
 spark_config: {}
 tags: []
 type: python
-updated_at: '2024-04-14 04:23:17'
+updated_at: '2024-04-17 19:23:37'
 uuid: github_etl
 variables:
   BUCKET_FOLDER_NAME: raw_github
@@ -88,6 +88,6 @@ variables:
   Google_credentials: .keys/github-data-analysis.json
   PROJECT_ID: github-data-analysis-419818
   Table_name: april_github_archive
-  type_execution: yesterday_data
+  type_execution: initial_data
 variables_dir: /home/src/mage_data/src
 widgets: []

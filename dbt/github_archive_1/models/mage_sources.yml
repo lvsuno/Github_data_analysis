@@ -1,8 +1,8 @@
 sources:
 - description: Dataframes Mage upstream blocks
   loader: mage
-  name: mage_github_archive
-  schema: None
+  name: mage_github_archive_1
+  schema: raw_github_archive
   tables:
   - description: Dataframe for block `export_to_bigquery` of the `github_etl` mage
       pipeline.

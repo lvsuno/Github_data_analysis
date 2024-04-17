@@ -1,0 +1,39 @@
+version: 2
+
+sources:
+    - name: staging
+      database: github-data-analysis-419818 # project_id in Bigquery
+      schema: raw_github_archive #dataset in Bigquery
+      tables: 
+        - name: april_github_archive # Table name
+            # freshness:
+                # error_after: {count: 6, period: day}
+models:
+    - name: stg_april_github_archive
+      description: >
+        Github archive data. This data record the event happening on githiub through the day. The data is stored each
+        hour.
+      columns: 
+          - name: event_id
+            description: Primary key for this table, generated with a concatenation of id+created_at
+            tests:
+               - unique:
+                   severity: warn
+               - not_null:
+                   severity: warn
+          - name: id
+            description: Unique identifier for the event.
+          - name: type
+            description: The type of event. Events uses PascalCase for the name.
+          - name: actor
+            description: The user that triggered the event.            
+          - name: repo
+            description: The repository object where the event occurred.
+          - name: payload
+            description: The event payload object is unique to the event type.
+          - name: public
+            description: Whether the event is visible to all users.
+          - name: created_at
+            description: The date and time when the event was triggered. It is formatted according to ISO 8601.            
+          - name: org
+            description: The organization that was chosen by the actor to perform action that triggers the event. The property appears in the event object only if it is applicable.

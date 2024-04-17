@@ -107,8 +107,8 @@ def load_data_from_api(*args, **kwargs):
             set_global_variable('github_etl', 'BUCKET_FOLDER_NAME', folder_name)
             set_global_variable('github_etl', 'CHUNK_SIZE', chunk_size)
             set_global_variable('github_etl', 'Google_credentials', cred)
-            set_global_variable('github_etl', 'Dataset_Id', config["Dataset_Id"])
-            set_global_variable('github_etl', 'Table_name', config["Table_name"])
+            set_global_variable('github_etl', 'Dataset_Id', os.getenv("Dataset_Id"))
+            set_global_variable('github_etl', 'Table_name', os.getenv("Table_name"))
 
         else:
             # os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config["Google_credentials"]
@@ -117,7 +117,7 @@ def load_data_from_api(*args, **kwargs):
             project_id = config["PROJECT_ID"]
             folder_name = config["BUCKET_FOLDER_NAME"]
             chunk_size = int(config["CHUNK_SIZE"])
-            cred = config["Google_credentials"]
+            cred = f"../../{config['Google_credentials']}"
 
             set_global_variable('github_etl', 'BUCKET_NAME', bucket_name)
             set_global_variable('github_etl', 'PROJECT_ID', project_id)

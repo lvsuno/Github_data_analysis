@@ -3,30 +3,8 @@ if 'data_exporter' not in globals():
 from google.cloud import bigquery
 from dotenv import dotenv_values
 import os
+from datetime import timedelta
 
-config = dotenv_values(".env") 
-
-
-if not config:
-    bucket_name = os.getenv("BUCKET_NAME")
-    project_id = os.getenv("GCP_PROJECT_ID")
-
-    folder_name = os.getenv("BUCKET_FOLDER_NAME")
-    chunk_size = int(os.getenv("CHUNK_SIZE"))
-    cred = os.getenv('Google_credentials')
-    Dataset_Id = os.getenv('Dataset_Id')
-    Table_name = os.getenv('Table_name')
-
-else:
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config["Google_credentials"]
-    bucket_name = config["BUCKET_NAME"]
-    project_id = config["PROJECT_ID"]
-
-    folder_name = config["BUCKET_FOLDER_NAME"]
-    chunk_size = int(config["CHUNK_SIZE"])
-    cred = config["Google_credentials"]
-    Dataset_Id = config['Dataset_Id']
-    Table_name = config['Table_name']
 
 
 @data_exporter
@@ -42,6 +20,7 @@ def export_data(data, *args, **kwargs):
         Optionally return any object and it'll be logged and
         displayed when inspecting the block run.
     """
+    data = kwargs.get('execution_date') - timedelta(days=1)
     # Specify your data exporting logic here
     if not kwargs.get('Dataset_Id'):
         config = dotenv_values(".env") # This line brings all environment variables from .env into os.environ
@@ -63,8 +42,8 @@ def export_data(data, *args, **kwargs):
             set_global_variable('github_etl', 'BUCKET_FOLDER_NAME', folder_name)
             set_global_variable('github_etl', 'CHUNK_SIZE', chunk_size)
             set_global_variable('github_etl', 'Google_credentials', cred)
-            set_global_variable('github_etl', 'Dataset_Id', config["Dataset_Id"])
-            set_global_variable('github_etl', 'Table_name', config["Table_name"])
+            set_global_variable('github_etl', 'Dataset_Id', os.getenv("Dataset_Id"))
+            set_global_variable('github_etl', 'Table_name', os.getenv("Table_name"))
 
 
         else:
@@ -74,7 +53,7 @@ def export_data(data, *args, **kwargs):
             project_id = config["PROJECT_ID"]
             folder_name = config["BUCKET_FOLDER_NAME"]
             chunk_size = int(config["CHUNK_SIZE"])
-            cred = config["Google_credentials"]
+            cred = f"../../{config['Google_credentials']}"
             Dataset_Id = config['Dataset_Id']
             Table_name = config['Table_name']
 
@@ -88,11 +67,11 @@ def export_data(data, *args, **kwargs):
 
     else:
         bucket_name = kwargs.get("BUCKET_NAME")
-        project_id = kwargs.get("GCP_PROJECT_ID")
+        project_id = kwargs.get("PROJECT_ID")
 
         folder_name = kwargs.get("BUCKET_FOLDER_NAME")
         chunk_size = int(kwargs.get("CHUNK_SIZE"))
-        cred = kwargs.get('Google_credentials')
+        cred = f"../../{kwargs.get('Google_credentials')}"
         Table_name = kwargs.get('Table_name')
         Dataset_Id = kwargs.get('Dataset_Id')
 
