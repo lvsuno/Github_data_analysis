@@ -90,9 +90,9 @@ def load_data_from_api(*args, **kwargs):
     Load incrementally by adding just the data of the previous day (Since our pipeline will run on daily basis).
     """
     now = kwargs.get('execution_date')
-    if not kwargs.get('BUCKET_NAME'):
-        config = dotenv_values(".env") # This line brings all environment variables from .env into os.environ
-        print(config)
+    if not kwargs.get('BUCKET_NAME')  or kwargs.get('Google_credentials').startswith('.'):
+        config = dotenv_values("../../.env") # This line brings all environment variables from .env into os.environ
+
         if not config:
             #os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.getenv("Google_credentials")
             bucket_name = os.getenv("BUCKET_NAME")
@@ -133,7 +133,10 @@ def load_data_from_api(*args, **kwargs):
 
         folder_name = kwargs.get("BUCKET_FOLDER_NAME")
         chunk_size = int(kwargs.get("CHUNK_SIZE"))
-        cred = kwargs.get('Google_credentials')
+        if kwargs.get('Google_credentials').startswith('.'):
+            cred = f"../../{kwargs.get('Google_credentials')}"
+        else:
+            cred = kwargs.get('Google_credentials')
 
 
 

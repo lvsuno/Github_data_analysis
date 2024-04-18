@@ -37,3 +37,7 @@ models:
       +materialized: incremental
     core:
       +materialized: incremental
+
+
+vars:
+  bot_or_human_values: ["BOT", "HUMAN"]

@@ -10,7 +10,7 @@ blocks:
   language: python
   name: export_to_bigquery
   retry_config: null
-  status: executed
+  status: updated
   timeout: null
   type: data_exporter
   upstream_blocks:
@@ -37,7 +37,7 @@ blocks:
   configuration:
     dbt:
       command: run
-    dbt_profile_target: ''
+    dbt_profile_target: dev
     dbt_project_name: dbt/github_archive_1
     disable_query_preprocessing: false
     export_write_policy: append
@@ -78,14 +78,14 @@ settings:
 spark_config: {}
 tags: []
 type: python
-updated_at: '2024-04-17 19:23:37'
+updated_at: '2024-04-18 14:23:54'
 uuid: github_etl
 variables:
   BUCKET_FOLDER_NAME: raw_github
   BUCKET_NAME: github-bucket-3615
   CHUNK_SIZE: 10000
   Dataset_Id: raw_github_archive
-  Google_credentials: .keys/github-data-analysis.json
+  Google_credentials: ../../.keys/github-data-analysis.json
   PROJECT_ID: github-data-analysis-419818
   Table_name: april_github_archive
   type_execution: initial_data

@@ -5,7 +5,7 @@ from dotenv import dotenv_values
 import os
 from datetime import timedelta
 
-
+from mage_ai.data_preparation.variable_manager import set_global_variable
 
 @data_exporter
 def export_data(data, *args, **kwargs):
@@ -21,10 +21,11 @@ def export_data(data, *args, **kwargs):
         displayed when inspecting the block run.
     """
     data = kwargs.get('execution_date') - timedelta(days=1)
-    # Specify your data exporting logic here
-    if not kwargs.get('Dataset_Id'):
-        config = dotenv_values(".env") # This line brings all environment variables from .env into os.environ
 
+
+    # Specify your data exporting logic here
+    if not kwargs.get('Dataset_Id')  or kwargs.get('Google_credentials').startswith('.'):
+        config = dotenv_values("../../.env") # This line brings all environment variables from .env into os.environ
         if not config:
             #os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.getenv("Google_credentials")
             bucket_name = os.getenv("BUCKET_NAME")
@@ -34,7 +35,7 @@ def export_data(data, *args, **kwargs):
             chunk_size = int(os.getenv("CHUNK_SIZE"))
             cred = os.getenv('Google_credentials')
             Dataset_Id = os.getenv('Dataset_Id')
-            Table_name = config['Table_name']
+            Table_name = os.getenv['Table_name']
 
 
             set_global_variable('github_etl', 'BUCKET_NAME', bucket_name)
@@ -71,7 +72,10 @@ def export_data(data, *args, **kwargs):
 
         folder_name = kwargs.get("BUCKET_FOLDER_NAME")
         chunk_size = int(kwargs.get("CHUNK_SIZE"))
-        cred = f"../../{kwargs.get('Google_credentials')}"
+        if kwargs.get('Google_credentials').startswith('.'):
+            cred = f"../../{kwargs.get('Google_credentials')}"
+        else:
+            cred = kwargs.get('Google_credentials')
         Table_name = kwargs.get('Table_name')
         Dataset_Id = kwargs.get('Dataset_Id')
 

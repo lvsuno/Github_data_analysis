@@ -1,0 +1,102 @@
+version: 2
+
+models:
+
+  - name: dim_daily_bot_vs_human
+    description: >
+       Number of daily entries per event types
+    columns:
+      - name: day
+        description: "The day of the event"
+      - name: type
+        description: "The type of event. Events uses PascalCase for the name."
+      - name: bot_or_human
+        tests: 
+          - accepted_values:
+              values: "{{ var('bot_or_human_values') }}"
+              severity: warn
+              quote: false
+           
+        description: "Tell if it's Bot or Human actor"
+      - name: nb_of_events
+        description: "Number of events"
+
+
+  - name: dim_daily_most_active_org
+    description: >
+       Number of daily most active organisation
+    columns:
+      - name: day
+        description: "The type of event. Events uses PascalCase for the name."
+      - name: org_id
+        description: "Organisation Id."
+      - name: org_login
+        description: "Organisation login name."
+      - name: nb_of_events
+        description: "Number of events"
+
+  - name: dim_daily_most_active_user
+    description: >
+       Number of daily most active user
+    columns:
+      - name: day
+        description: "The type of event. Events uses PascalCase for the name."
+      - name: actor_id
+        description: "Organisation Id."
+      - name: actor_login
+        description: "Organisation login name."
+      - name: nb_of_events
+        description: "Number of events"
+
+  - name: dim_daily_most_interesting_project
+    description: >
+       Daily most interesting project based of number of Forked repository
+    columns:
+      - name: day
+        description: "The type of event. Events uses PascalCase for the name."
+      - name: repo_id
+        description: "Repository Id."
+      - name: repo_name
+        description: "Repository name."
+      - name: nb_of_events
+        description: "Number of events"
+
+  - name: dim_daily_top_repos
+    description: >
+       Daily most active repositories. 
+    columns:
+      - name: day
+        description: "The type of event. Events uses PascalCase for the name."
+      - name: repo_id
+        description: "Repository Id."
+      - name: repo_name
+        description: "Repository name."
+      - name: nb_of_events
+        description: "Number of events"        
+
+  - name: dim_entries_per_event
+    description: >
+       Number of daily entries per event types
+    columns:
+      - name: day
+        description: "The type of event. Events uses PascalCase for the name."
+      - name: type
+        description: "The type of event. Events uses PascalCase for the name."
+      - name: nb_of_events
+        description: "Number of events"
+
+
+  - name: dim_hourly_entries_per_event
+    description: >
+       Number of daily entries per event types
+    columns:
+      - name: day
+        description: "The day of the event"
+      - name: hour
+        description: "The hour of the event"
+      - name: type
+        description: "The type of event. Events uses PascalCase for the name."
+      - name: nb_of_events
+        description: "Number of events"
+
+
