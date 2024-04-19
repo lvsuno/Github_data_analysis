@@ -90,10 +90,9 @@ def load_data_from_api(*args, **kwargs):
     Load incrementally by adding just the data of the previous day (Since our pipeline will run on daily basis).
     """
     now = kwargs.get('execution_date')
-    if not kwargs.get('BUCKET_NAME')  or kwargs.get('Google_credentials').startswith('.'):
-        config = dotenv_values("../../.env") # This line brings all environment variables from .env into os.environ
-
-        if not config:
+    if not kwargs.get('BUCKET_NAME'):
+        
+        if not os.path.isdir("../../.keys/"):
             #os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.getenv("Google_credentials")
             bucket_name = os.getenv("BUCKET_NAME")
             project_id = os.getenv("GCP_PROJECT_ID")
@@ -101,6 +100,9 @@ def load_data_from_api(*args, **kwargs):
             folder_name = os.getenv("BUCKET_FOLDER_NAME")
             chunk_size = int(os.getenv("CHUNK_SIZE"))
             cred = os.getenv('Google_credentials')
+            Dataset_Id = os.getenv('Dataset_Id')
+            Table_name = os.getenv['Table_name']
+
 
             set_global_variable('github_etl', 'BUCKET_NAME', bucket_name)
             set_global_variable('github_etl', 'PROJECT_ID', project_id)
@@ -110,14 +112,17 @@ def load_data_from_api(*args, **kwargs):
             set_global_variable('github_etl', 'Dataset_Id', os.getenv("Dataset_Id"))
             set_global_variable('github_etl', 'Table_name', os.getenv("Table_name"))
 
+
         else:
             # os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config["Google_credentials"]
-            
+            config = dotenv_values("../../.env") # This line brings all environment variables from .env into os.environ
             bucket_name = config["BUCKET_NAME"]
             project_id = config["PROJECT_ID"]
             folder_name = config["BUCKET_FOLDER_NAME"]
             chunk_size = int(config["CHUNK_SIZE"])
             cred = f"../../{config['Google_credentials']}"
+            Dataset_Id = config['Dataset_Id']
+            Table_name = config['Table_name']
 
             set_global_variable('github_etl', 'BUCKET_NAME', bucket_name)
             set_global_variable('github_etl', 'PROJECT_ID', project_id)
@@ -129,15 +134,21 @@ def load_data_from_api(*args, **kwargs):
 
     else:
         bucket_name = kwargs.get("BUCKET_NAME")
-        project_id = kwargs.get("GCP_PROJECT_ID")
+        project_id = kwargs.get("PROJECT_ID")
+        Table_name = kwargs.get('Table_name')
+        Dataset_Id = kwargs.get('Dataset_Id')
 
         folder_name = kwargs.get("BUCKET_FOLDER_NAME")
         chunk_size = int(kwargs.get("CHUNK_SIZE"))
-        if kwargs.get('Google_credentials').startswith('.'):
-            cred = f"../../{kwargs.get('Google_credentials')}"
+        if not os.path.isdir("../../.keys/"): 
+             
+            if kwargs.get('Google_credentials').startswith('.'):
+                cred = os.getenv('Google_credentials')
+                set_global_variable('github_etl', 'Google_credentials', cred)
+            else:
+                cred = kwargs.get('Google_credentials')
         else:
             cred = kwargs.get('Google_credentials')
-
 
 
    # df = pd.DataFrame()  

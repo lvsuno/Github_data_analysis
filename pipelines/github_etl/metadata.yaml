@@ -78,7 +78,7 @@ settings:
 spark_config: {}
 tags: []
 type: python
-updated_at: '2024-04-18 14:23:54'
+updated_at: '2024-04-19 14:44:14'
 uuid: github_etl
 variables:
   BUCKET_FOLDER_NAME: raw_github
