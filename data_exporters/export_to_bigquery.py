@@ -24,10 +24,10 @@ def export_data(data, *args, **kwargs):
 
 
     # Specify your data exporting logic here
-    if not kwargs.get('Dataset_Id'):
+    if not kwargs.get('Google_credentials'):
         
-        if not os.path.isdir("../../.keys/"):
-            #os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.getenv("Google_credentials")
+        if not os.path.isdir(".keys/"):
+            os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.getenv("Google_credentials")
             bucket_name = os.getenv("BUCKET_NAME")
             project_id = os.getenv("GCP_PROJECT_ID")
 
@@ -48,13 +48,14 @@ def export_data(data, *args, **kwargs):
 
 
         else:
-            # os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config["Google_credentials"]
-            config = dotenv_values("../../.env") # This line brings all environment variables from .env into os.environ
+            # 
+            config = dotenv_values(".env") # This line brings all environment variables from .env into os.environ
             bucket_name = config["BUCKET_NAME"]
+            os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config["Google_credentials"]
             project_id = config["PROJECT_ID"]
             folder_name = config["BUCKET_FOLDER_NAME"]
             chunk_size = int(config["CHUNK_SIZE"])
-            cred = f"../../{config['Google_credentials']}"
+            cred = f"{config['Google_credentials']}"
             Dataset_Id = config['Dataset_Id']
             Table_name = config['Table_name']
 
@@ -74,15 +75,18 @@ def export_data(data, *args, **kwargs):
 
         folder_name = kwargs.get("BUCKET_FOLDER_NAME")
         chunk_size = int(kwargs.get("CHUNK_SIZE"))
-        if not os.path.isdir("../../.keys/"): 
+        if not os.path.isdir(".keys/"): 
              
             if kwargs.get('Google_credentials').startswith('.'):
                 cred = os.getenv('Google_credentials')
                 set_global_variable('github_etl', 'Google_credentials', cred)
+                os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = cred
             else:
                 cred = kwargs.get('Google_credentials')
+                os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = cred
         else:
             cred = kwargs.get('Google_credentials')
+            os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = cred
 
 
     # Demonstrates creating an external table with hive partitioning.

@@ -6,7 +6,7 @@ github_archive_1:
       dataset: {{ variables('Dataset_Id') }}
       job_execution_timeout_seconds: 300
       job_retries: 1
-      keyfile: {{ variables('Google_credentials') }}
+      keyfile: ../../{{ variables('Google_credentials') }}
       location: US
       method: service-account
 #      priority: interactive

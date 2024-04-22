@@ -14,7 +14,6 @@ from datetime import timedelta
 
 import pyarrow as pa
 import pyarrow.parquet as pq
-import os
 import pandas as pd
         
 
@@ -53,9 +52,6 @@ def export_to_gcs(data: pd.DataFrame, bucket_name, folder_name):
     table = pa.Table.from_pandas(data)
 
     gcs = pa.fs.GcsFileSystem()
-    print('yep')
-    print(bucket_name)
-    print(folder_name)
     pq.write_to_dataset(
         table,
         root_path=root_path,
@@ -90,10 +86,9 @@ def load_data_from_api(*args, **kwargs):
     Load incrementally by adding just the data of the previous day (Since our pipeline will run on daily basis).
     """
     now = kwargs.get('execution_date')
-    if not kwargs.get('BUCKET_NAME'):
-        
-        if not os.path.isdir("../../.keys/"):
-            #os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.getenv("Google_credentials")
+    if not kwargs.get('Google_credentials'):
+        if not os.path.isdir(".keys/"):
+            os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.getenv("Google_credentials")
             bucket_name = os.getenv("BUCKET_NAME")
             project_id = os.getenv("GCP_PROJECT_ID")
 
@@ -114,13 +109,14 @@ def load_data_from_api(*args, **kwargs):
 
 
         else:
-            # os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config["Google_credentials"]
-            config = dotenv_values("../../.env") # This line brings all environment variables from .env into os.environ
+            
+            config = dotenv_values(".env") # This line brings all environment variables from .env into os.environ
+            os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config["Google_credentials"]
             bucket_name = config["BUCKET_NAME"]
             project_id = config["PROJECT_ID"]
             folder_name = config["BUCKET_FOLDER_NAME"]
             chunk_size = int(config["CHUNK_SIZE"])
-            cred = f"../../{config['Google_credentials']}"
+            cred = f"{config['Google_credentials']}"
             Dataset_Id = config['Dataset_Id']
             Table_name = config['Table_name']
 
@@ -140,15 +136,18 @@ def load_data_from_api(*args, **kwargs):
 
         folder_name = kwargs.get("BUCKET_FOLDER_NAME")
         chunk_size = int(kwargs.get("CHUNK_SIZE"))
-        if not os.path.isdir("../../.keys/"): 
+        if not os.path.isdir(".keys/"): 
              
             if kwargs.get('Google_credentials').startswith('.'):
                 cred = os.getenv('Google_credentials')
                 set_global_variable('github_etl', 'Google_credentials', cred)
+                os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = cred
             else:
                 cred = kwargs.get('Google_credentials')
+                os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = cred
         else:
             cred = kwargs.get('Google_credentials')
+            os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = cred
 
 
    # df = pd.DataFrame()  
