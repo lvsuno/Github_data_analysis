@@ -59,7 +59,7 @@ I ingest the data from the beginning of April 2024. For the first run, the progr
 
 ## 2 Load data to BigQuery
 I write a custom code for the creation of external table in Bigquery.  It checks if it's an initial run and load all the partionned data to bigquery. If it's the daily run, he will just load the data of the previous day (the last ingested in GCS).  
-![Bucket data](images/Bigquery data.png)
+![Bucket data](images/Bigquery_data.png)
 
 ## 3 Dbt data transformation
 
